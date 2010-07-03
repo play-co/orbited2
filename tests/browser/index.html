@@ -1,0 +1,36 @@
+<head>
+ <script src="jsio/jsio.js"></script>
+ <script>
+ function asHexString(str) {
+   out = [];
+   for (var i = 0, c; c = str[i]; ++i) {
+      out.push('\\x' + c.charCodeAt(0).toString(16))
+   }
+   return out.join("");
+}
+	jsio('from base import logging');
+	logging.get('net.protocols.buffered').setLevel(0);
+  jsio('import .Orbited_raw as Orbited');
+	Orbited.WebSocket.install({
+		proxyUri: "http://localhost:8000"
+	});
+	var ws = null;
+	function connect() {
+		ws = new WebSocket('ws://localhost:8013/echo');
+		ws.onopen = function() {
+			console.log('websocket onopen');
+			ws.send("Hello!");
+		}
+		ws.onmessage = function(msg) {
+			console.log('websocket onmessage:', msg);
+		}
+		ws.onclose = function() {
+			console.log('websocket onclose');
+		}
+	}
+	onload = connect
+	</script>
+</head>
+<body>
+<h1>Orbited.Websocket test page</h1>
+</body>

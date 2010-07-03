@@ -1,0 +1,32 @@
+<head>
+ <script src="jsio/jsio.js"></script>
+ <script>
+ function asHexString(str) {
+	 out = [];
+   for (var i = 0, c; c = str[i]; ++i) {
+      out.push('\\x' + c.charCodeAt(0).toString(16))
+   }
+   return out.join("");
+}
+  jsio('import .Orbited_raw as Orbited');
+	var sock = null;
+	function connect() {
+		sock = new Orbited.TCPSocket({ proxyUri: "http://localhost:8000"});
+		sock.open('localhost', 8014);
+		sock.onopen = function() {
+			console.log('TCPSocket onopen');
+			sock.send("Hello!");
+		}
+		sock.onread = function(data) {
+			console.log('TCPSocket onread:', data);
+		}
+		sock.onclose = function() {
+			console.log('TCPSocket onclose');
+		}
+	}
+	onload = connect;
+	</script>
+</head>
+<body>
+<h1>Orbited.Websocket test page</h1>
+</body>

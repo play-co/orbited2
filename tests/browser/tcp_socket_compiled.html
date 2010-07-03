@@ -1,0 +1,24 @@
+<head>
+  <script src="Orbited.js"></script>
+  <script>
+	var sock = null;
+	function connect() {
+		sock = new Orbited.TCPSocket({ proxyUri: "http://localhost:8000"});
+		sock.open('localhost', 8014);
+		sock.onopen = function() {
+			console.log('TCPSocket onopen');
+			sock.send("Hello!");
+		}
+		sock.onread = function(data) {
+			console.log('TCPSocket onread:', data);
+		}
+		sock.onclose = function() {
+			console.log('TCPSocket onclose');
+		}
+	}
+	onload = connect
+	</script>
+</head>
+<body>
+<h1>Orbited.Websocket test page</h1>
+</body>

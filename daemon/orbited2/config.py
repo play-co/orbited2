@@ -1,0 +1,2 @@
+class OrbitedConfig(object):
+    pass

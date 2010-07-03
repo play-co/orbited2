@@ -1,0 +1,32 @@
+Orbited2
+========
+
+I have turned the reins to Orbited 0.7.x/0.8.x over to other developers, and there is plenty to do in order to stabilize that branch. I'm interested in building a next-generation of Orbited which will just work out of the box, even more so than the last Orbited just worked. In particular, I want to solve all that legacy, cross-domain bullshit, and I want to offer two modes 1) tcp proxying, 2) websocket proxying. 
+
+TCP Proxying improvments
+------------------------
+
+- No more stupid domain hacks
+- Web-based admin panel
+- No @#$%@^ on-board STOMP.
+
+WebSocket proxying
+------------------
+
+Why do we need a websocket proxy, you ask?  Lets say you write a websocket server. Great, you now support chrome... and safari I suppose. But wait, which draft of websocket, 75? 76? 77..? 88? Time to Write ten versions of your server, just to get the latest Webkit browers working.
+
+Instead, include orbited_websocket.js, and call:
+
+Orbited.Websocket.install({
+	proxyUri: "https://orbited.example.com:8001"
+	protocolVersion: "rev76",
+	forceProxy: true
+});
+
+Next you can just use the WebSocket api:
+
+var ws = new WebSocket();
+//etc.
+
+Now, you can simply code a rev76 websocket server, and Orbited will always do the right thing. If your browser supports that websocket, it will just use it. If it doesn't, it will proxy through orbited, transforming the protocol to the requested revision. Orbited will choose the best transport level protocol regardless of browser. Perhaps that transport will be script-tag longpolling (cross-domain IE6), or perhaps it will be WebSocket rev75 (Older chrome.) Maybe it will be flash. Who cares though, just write a WebSocket server and be done with it.
+

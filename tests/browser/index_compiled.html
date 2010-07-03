@@ -1,0 +1,26 @@
+<head>
+  <script src="Orbited.js"></script>
+  <script>
+	Orbited.WebSocket.install({
+		proxyUri: "http://localhost:8000"
+	});
+	var ws = null;
+	function connect() {
+		ws = new WebSocket('ws://localhost:8013/echo');
+		ws.onopen = function() {
+			console.log('websocket onopen');
+			ws.send("Hello!");
+		}
+		ws.onmessage = function(msg) {
+			console.log('websocket onmessage:', msg);
+		}
+		ws.onclose = function() {
+			console.log('websocket onclose');
+		}
+	}
+	onload = connect
+	</script>
+</head>
+<body>
+<h1>Orbited.Websocket test page</h1>
+</body>

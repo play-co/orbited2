@@ -1,0 +1,7 @@
+{
+    "root": "Orbited",
+    "externalName": "Orbited",
+    "transports": ["csp"],
+    "environments": ["browser"],
+    "additional_dependancies": [ ]
+}
