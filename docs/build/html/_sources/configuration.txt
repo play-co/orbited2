@@ -51,12 +51,12 @@ Unique name for logging purposes
 hostname (required)
 -------------------
 
-Destination hostname
+Destination hostname. This is a string that may represent either an ip address or a hostname.
 
 port (required)
 ---------------
 
-Destination port
+Destination port; an integer.
 
 host_header (required)
 ----------------------

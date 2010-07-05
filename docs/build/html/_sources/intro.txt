@@ -24,6 +24,11 @@ The Solution
 
 This code works in *all* browsers, and it will always use the best communication mechanism possible.
 
+..sourcecode:: html
+    
+    <script src="http://example.com:8000/static/Orbited2.js"></script>
+    
+
 .. sourcecode:: javascript
 
     Orbited2.WebSocket.install({
@@ -32,7 +37,27 @@ This code works in *all* browsers, and it will always use the best communication
 
     var ws = new WebSocket('ws://example.com/app')
 
- 
+
+Orbited Veterans
+----------------
+
+For all of you Orbited veterans who aren't so sure about writing WebSocket servers, and you just want to keep using trusty old Orbited.TCPSocket (but with performance and usability improvments) -- don't worry!
+
+.. source:: html
+
+    <script src="Orbited2.js"></script>
+    
+
+.. sourcecode:: javascript
+
+    var sock = new Orbited2.TCPSocket({ orbitedUri: "http://127.0.0.1:8000" })
+    sock.open("irc.freenode.org", 6667);
+    sock.onopen = function() { 
+        sock.send('NICK mcarter\r\n');
+    }
+    //etc 
+    
+
 Installation
 ============
 
