@@ -121,9 +121,8 @@
 <div class="section" id="the-solution">
 <h3>The Solution<a class="headerlink" href="#the-solution" title="Permalink to this headline">¶</a></h3>
 <p>This code works in <em>all</em> browsers, and it will always use the best communication mechanism possible.</p>
-<p>..sourcecode:: html</p>
-<blockquote>
-&lt;script src=&#8221;<a class="reference external" href="http://example.com:8000/static/Orbited2.js">http://example.com:8000/static/Orbited2.js</a>&#8220;&gt;&lt;/script&gt;</blockquote>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://example.com:8000/static/Orbited2.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></pre></div>
+</div>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="nx">Orbited2</span><span class="p">.</span><span class="nx">WebSocket</span><span class="p">.</span><span class="nx">install</span><span class="p">({</span>
     <span class="nx">protocolVersion</span><span class="o">:</span> <span class="s2">&quot;hixie76&quot;</span><span class="p">,</span>
 <span class="p">})</span>
@@ -134,6 +133,8 @@
 <div class="section" id="orbited-veterans">
 <h3>Orbited Veterans<a class="headerlink" href="#orbited-veterans" title="Permalink to this headline">¶</a></h3>
 <p>For all of you Orbited veterans who aren&#8217;t so sure about writing WebSocket servers, and you just want to keep using trusty old Orbited.TCPSocket (but with performance and usability improvments) &#8211; don&#8217;t worry!</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;Orbited2.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></pre></div>
+</div>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Orbited2</span><span class="p">.</span><span class="nx">TCPSocket</span><span class="p">({</span> <span class="nx">orbitedUri</span><span class="o">:</span> <span class="s2">&quot;http://127.0.0.1:8000&quot;</span> <span class="p">})</span>
 <span class="nx">sock</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;irc.freenode.org&quot;</span><span class="p">,</span> <span class="mi">6667</span><span class="p">);</span>
 <span class="nx">sock</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>

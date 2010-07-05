@@ -24,7 +24,7 @@ The Solution
 
 This code works in *all* browsers, and it will always use the best communication mechanism possible.
 
-.. sourcecode:: html
+..sourcecode:: html
     
     <script src="http://example.com:8000/static/Orbited2.js"></script>
     
@@ -43,7 +43,7 @@ Orbited Veterans
 
 For all of you Orbited veterans who aren't so sure about writing WebSocket servers, and you just want to keep using trusty old Orbited.TCPSocket (but with performance and usability improvments) -- don't worry!
 
-.. sourcecode:: html
+.. source:: html
 
     <script src="Orbited2.js"></script>
     
