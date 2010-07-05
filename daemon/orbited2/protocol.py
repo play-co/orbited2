@@ -23,9 +23,9 @@ class OrbitedProtocol(object):
         self._sock = sock
         self._addr = addr
         self._browser_conns = {}
-        eventlet.spawn(self._run)
         
-    def _run(self):
+        
+    def run(self):
         buffer = ""
         length = -1
         while True:
@@ -76,6 +76,7 @@ class OrbitedProtocol(object):
             data = data.encode('utf-8', 'replace')
         payload = str(id) + ',' + str(frame_type) + ',' + data
         frame = str(len(payload)) + ',' + payload
+#        print "SEND->Browser", repr(frame)
         self._sock.send(frame)
             
 class BrowserConn(object):
@@ -155,7 +156,7 @@ def ensure_allowed_and_get_protocol_class(rules, conn):
                 if rule.protocol == 'tcp':
                     return TcpProtocol
             break
-    print 'failed', conn.__dict__
+#    print 'failed', conn.__dict__
     raise Exception("Unauthorized remote destination; update config to allow access.")
 
 class RemoteConnection(object):
@@ -362,6 +363,11 @@ class WebSocket75Protocol(TcpProtocol):
         
 class WebSocket76Protocol(WebSocket75Protocol):
     
+    # TODO: This handshake is a bit ridiculous. I've taken the exact example
+    #       Sec-Websocket-Keys from the rev 76 spec, and hard coded them into
+    #       my handshake. This will work, but it really isn't want WS clients
+    #       should be doing...
+    
     def handshake(self, sock):
         conn = self.conn
         ws_host_header = conn.hostname + (conn.port == 80 and '' or ':' + str(conn.port))
@@ -399,56 +405,3 @@ class WebSocket76Protocol(WebSocket75Protocol):
         self._buf = buf[16:]
     def close(self, sock):
         sock.sendall(self.pack_message(""))
-
-"""
-
-    # Websocket rev76 transcript
-    
-    
-       GET /demo HTTP/1.1
-        Host: example.com
-        Connection: Upgrade
-        Sec-WebSocket-Key2: 12998 5 Y3 1  .P00
-        Sec-WebSocket-Protocol: sample
-        Upgrade: WebSocket
-        Sec-WebSocket-Key1: 4 @1  46546xW%0l 1 5
-        Origin: http://example.com
-
-        ^n:ds[4U
-
-
-# If it's new-version, we need to work out our challenge response
-        if self.protocol_version == 76:
-            key1 = self._extract_number(environ['HTTP_SEC_WEBSOCKET_KEY1'])
-            key2 = self._extract_number(environ['HTTP_SEC_WEBSOCKET_KEY2'])
-            # There's no content-length header in the request, but it has 8
-            # bytes of data.
-            environ['wsgi.input'].content_length = 8
-            key3 = environ['wsgi.input'].read(8)
-            key = struct.pack(">II", key1, key2) + key3
-            response = md5(key).digest()
-        
-        # Start building the response
-        if self.protocol_version == 75:
-            handshake_reply = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-                               "Upgrade: WebSocket\r\n"
-                               "Connection: Upgrade\r\n"
-                               "WebSocket-Origin: %s\r\n"
-                               "WebSocket-Location: ws://%s%s\r\n\r\n" % (
-                    environ.get('HTTP_ORIGIN'),
-                    environ.get('HTTP_HOST'),
-                    environ.get('PATH_INFO')))
-        elif self.protocol_version == 76:
-            handshake_reply = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-                               "Upgrade: WebSocket\r\n"
-                               "Connection: Upgrade\r\n"
-                               "Sec-WebSocket-Origin: %s\r\n"
-                               "Sec-WebSocket-Protocol: %s\r\n"
-                               "Sec-WebSocket-Location: ws://%s%s\r\n"
-                               "\r\n%s"% (
-                    environ.get('HTTP_ORIGIN'),
-                    environ.get('HTTP_SEC_WEBSOCKET_PROTOCOL', 'default'),
-                    environ.get('HTTP_HOST'),
-                    environ.get('PATH_INFO'),
-                    response))
-"""

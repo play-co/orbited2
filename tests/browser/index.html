@@ -11,19 +11,21 @@
 	jsio('from base import logging');
 	logging.get('net.protocols.buffered').setLevel(0);
   jsio('import .Orbited_raw as Orbited');
+  
 	Orbited.WebSocket.install({
-		proxyUri: "http://localhost:8000",
+		proxyUri: "http://127.0.0.1:8000",
 		protocolVersion: 'hixie76'
 	});
+	
 	var ws = null;
 	function connect() {
-		ws = new WebSocket('ws://localhost:8013/echo');
+		ws = new WebSocket('ws://127.0.0.1:8013/echo');
 		ws.onopen = function() {
 			console.log('websocket onopen');
 			ws.send("Hello!");
 		}
 		ws.onmessage = function(msg) {
-			console.log('websocket onmessage:', msg);
+			console.log('websocket onmessage:', msg.data);
 		}
 		ws.onclose = function() {
 			console.log('websocket onclose');

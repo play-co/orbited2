@@ -20,7 +20,7 @@ class OrbitedServer(object):
             wsgi_app = URLMap()
             wsgi_app['/static'] = static.Cling(static_path)            
             if 'ws' in rule.protocols:
-                wsgi_app['/ws'] = self._wsgi_websocket
+                wsgi_app['/ws'] = eventlet.websocket.WebSocketWSGI(self._wsgi_websocket)
             if 'csp' in rule.protocols:
                 wsgi_app['/csp'] = self._csp_sock
             self._wsgi_apps[(rule.interface, rule.port)] = wsgi_app
@@ -44,12 +44,25 @@ class OrbitedServer(object):
                 break
 
     def _accepted(self, sock, addr=None):
-        protocol.OrbitedProtocol(self, self._config.rules['RemoteDestination'], sock, addr)
+        p = protocol.OrbitedProtocol(self, self._config.rules['RemoteDestination'], sock, addr)
+        p.run()
+        
+    def _wsgi_websocket(self, ws):
+        self._accepted(SockWebSocketWrapper(ws))
 
-    @eventlet.websocket.WebSocketWSGI
-    def _wsgi_websocket(self, sock):
-        self._accepted(sock)
 
+class SockWebSocketWrapper(object):
+    def __init__(self, ws):
+        self._ws = ws
+        
+    def recv(self, num):
+        # not quite right (ignore num)... but close enough for our use.
+        data = self._ws.wait()
+        data = data.encode('utf-8')
+        return data
+
+    def __getattr__(self, key):
+        return getattr(self._ws, key)
 
 class EmptyLogShim(object):
     def write(self, *args, **kwargs):

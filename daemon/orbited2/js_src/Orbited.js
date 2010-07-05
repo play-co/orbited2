@@ -5,6 +5,9 @@ jsio('import std.JSON');
 jsio('import std.utf8 as utf8');
 
 
+var originalWebSocket = window.WebSocket;
+
+
 var baseUri = new std.uri.Uri(window.location);
 
 var defaultOrbitedUri;
@@ -24,7 +27,6 @@ function setup() {
 	}
 }
 setup();
-logger.info('defaultOrbitedUri', defaultOrbitedUri);
 
 
 
@@ -57,22 +59,20 @@ exports.TCPSocket = Class(function() {
 		this._host = host;
 		this._port = port;
 		this._conn = multiplexer.openConnection();
-		this._conn.onOpen = bind(this, '_onOpen');
-		this._conn.onFrame = bind(this, '_onFrame');
-		this._conn.onClose = bind(this, '_onClose');
+		this._conn.onOpen = bind(this, _onOpen);
+		this._conn.onFrame = bind(this, _onFrame);
+		this._conn.onClose = bind(this, _onClose);
 		this.readyState = READYSTATE_CONNECTING;
 	}
 	
-	this._onClose = function() {
-		logger.info('got _onClose');
+	var _onClose = function() {
 		if (this.readyState == READYSTATE_CLOSED) { return; }
 		this.readyState = READYSTATE_CLOSED;
 		releaseMultiplexer();
-		this._trigger('close');
+		bind(this, _trigger)('close');
 	}
 	
-	this._onOpen = function() {
-		logger.info('onOpen!');
+	var _onOpen = function() {
 		this._conn.send(JSON.stringify({
 			hostname: this._host,
 			port: this._port,
@@ -80,13 +80,12 @@ exports.TCPSocket = Class(function() {
 		}));
 	}
 	
-	this._onFrame = function(payload) {
-		logger.info('_onFrame', payload);
+	var _onFrame = function(payload) {
 		switch(this.readyState) {
 			case READYSTATE_CONNECTING:
 				if (payload == '1') {
 					this.readyState = READYSTATE_OPEN;
-					this._trigger('open');
+					bind(this, _trigger)('open');
 				} else {
 					this._onClose();
 				}
@@ -97,7 +96,7 @@ exports.TCPSocket = Class(function() {
 				payload= result[0];
 				this._buffer = this._buffer.slice(result[1]);
 				if (payload.length) {
-					this._trigger('read', payload);
+					bind(this, _trigger)('read', payload);
 				}
 				break;
 		}
@@ -118,14 +117,14 @@ exports.TCPSocket = Class(function() {
 		this._conn.onClose = bind(this, '_onClose');
 	}
 
-	this._trigger = function(signal, data) {
-		// TODO: use real signal handlers
-		this['on' + signal].call(this, data);
+	var _trigger = function(signal, data) {
+		// TODO: use real signal handlers and real events
+		var fn = this['on' + signal];
+		if (fn) {
+			fn.call(this, { data: data});
+		}
 	}
-	
-	this.onread = function() { }
-	this.onopen = function() { }
-	this.onclose = function() { }
+
 	
 });
 
@@ -135,36 +134,38 @@ exports.WebSocket = Class(function() {
 	
 	this.init = function(url, protocol) {
 		// TODO: what do we do with protocol?
-		this._url = url;
+		this.URL = url;
 		this.readyState = READYSTATE_CONNECTING;
 		this.bufferedAmount = 0;
-		logger.info('opts', exports.WebSocket.opts);
 		var multiplexer = getMultiplexer(exports.WebSocket.opts.proxyUri);
 		this._conn = multiplexer.openConnection();
-		this._conn.onOpen = bind(this, '_onOpen');
-		this._conn.onFrame = bind(this, '_onFrame');
-		this._conn.onClose = bind(this, '_onClose');
+		this._conn.onOpen = bind(this, _onOpen);
+		this._conn.onFrame = bind(this, _onFrame);
+		this._conn.onClose = bind(this, _onClose);
+		
+		// Callbacks
+		this.onclose = null;
+		this.onerror = null;
+		this.onmessage = null;
+		this.onopen = null;
+		
 	}
 	
 	this.send = function(data) {
 		if ( this.readyState >= READYSTATE_CLOSING) { return; }
-		var encoded = utf8.encode(data);
-		logger.info('data', JSON.stringify(data));
-		logger.info('encoded', JSON.stringify(encoded));
-		this._conn.send(encoded);
+		data = utf8.encode(data);
+		this._conn.send(data);
 	}
 	
-	this._onClose = function() {
-		logger.info('got _onClose');
+	var _onClose = function() {
 		if (this.readyState == READYSTATE_CLOSED) { return; }
 		this.readyState = READYSTATE_CLOSED;
 		releaseMultiplexer();
-		this._trigger('close');
+		bind(this, _trigger)('close');
 	}
 	
-	this._onOpen = function() {
-		logger.info('onOpen!');
-		var uri = new std.uri.Uri(this._url);
+	var _onOpen = function() {
+		var uri = new std.uri.Uri(this.URL);
 		this._conn.send(JSON.stringify({
 			hostname: uri.getHost(),
 			port: parseInt(uri.getPort()) || (uri.getProtocol() == 'ws' ? 80 : 443),
@@ -173,13 +174,12 @@ exports.WebSocket = Class(function() {
 		}));
 	}
 	
-	this._onFrame = function(payload) {
-		logger.info('_onFrame', payload);
+	var _onFrame = function(payload) {
 		switch(this.readyState) {
 			case READYSTATE_CONNECTING:
 				if (payload == '1') {
 					this.readyState = READYSTATE_OPEN;
-					this._trigger('open');
+					bind(this, _trigger)('open');
 				} else {
 					this._onClose();
 				}
@@ -188,30 +188,27 @@ exports.WebSocket = Class(function() {
 				var result = utf8.decode(payload);
 				// TODO: what about result[1] (leftover) ?
 				// TODO: what about "U+FFFD REPLACEMENT CHARACTER" ?
-				this._trigger('message', result[0]);
+				bind(this, _trigger)('message', result[0]);
 				break;
 		}
 	}
 	
-	this._trigger = function(signal, data) {
-		// TODO: use real signal handlers
-		this['on' + signal].call(this, data);
+	var _trigger = function(signal, data) {
+		// TODO: use real signal handlers and real events
+		var fn = this['on' + signal];
+		if (fn) {
+			fn.call(this, { data: data});
+		}
 	}
 	
 	this.close = function() {
 		if (this.readyState >= READYSTATE_CLOSING) { return; }
 		this.readyState = READYSTATE_CLOSING;
 		this._conn.close();
-		this._conn.onClose = bind(this, '_onClose');
+		this._conn.onClose = bind(this, _onClose);
 	}
 	
-	// Callbacks
 	
-	
-	this.onopen = function() {};
-	this.onmessage = function() {};
-	this.onerror = function() {};
-	this.onclose = function() {};
 });
 
 
@@ -223,14 +220,15 @@ exports.WebSocket.install = function(opts) {
 	validateOpts(opts);
 	exports.WebSocket.opts = opts;
 	installed = true;
-	if (!opts.forceProxy && hasNativeWebsocket(opts.protocolVersion)) {
+	if (!opts.forceProxy && hasNativeWebSocket(opts.protocolVersion)) {
 		return;
 	}
 	window.WebSocket = exports.WebSocket;
+	window.WebSocket.__original__ = originalWebSocket;
 }
 
 function validateOpts(opts) {
-	opts.protocolVersion = opts.protocolVersion || 'hixie75';
+	opts.protocolVersion = opts.protocolVersion || 'hixie76';
 	opts.forceProxy = !!opts.forceProxy;
 	if (!opts.proxyUri) {
 		opts.proxyUri = defaultOrbitedUri;
@@ -241,13 +239,24 @@ function validateOpts(opts) {
 	if (!opts.proxyUri.match('/$')) {
 		opts.proxyUri += '/';
 	}
-	
 }
 
-function hasNativeWebsocket(rev) {
-//	return false;
-	// TODO: Actually detect different revisions. This could get complicated...
-	return !!window.WebSocket;
+function hasNativeWebSocket(rev) {
+	// Actually detect different revisions. This could get complicated...
+	
+	if (!originalWebSocket) { return false; }
+	if (!rev) { return true; }
+	if (navigator.userAgent.match("Chrome/5")) {
+		return rev == 'hixie75';
+	}
+	if (navigator.userAgent.match("Chrome/6")) {
+		return rev == 'hixie76';
+	}
+	if (navigator.userAgent.match("Version/5\.0 Safari")) {
+		return rev == 'hixie75';
+	}
+	// unknown.. when in doubt, say no.
+	return false;
 }
 
 
@@ -264,12 +273,16 @@ function getMultiplexer(baseUri) {
 		}
 		// TODO: Choose transport
 		
-		if (false) { // TODO: implement websocket js.io transport
-			net.connect(multiplexer, 'websocket', { url: baseUri + 'ws' });
+		if (!!originalWebSocket) { 
+			var uri = new std.uri.Uri(baseUri);
+			uri.setProtocol('ws');
+			var url = uri.render() + 'ws';
+			net.connect(multiplexer, 'websocket', { url: url, constructor: originalWebSocket });
+			multiplexer.mode = 'ws';
 		}
 		else { // Fallback ot csp
-			logger.info('call net.connect', 'csp', { url: baseUri + 'csp' });
 			net.connect(multiplexer, 'csp', { url: baseUri + 'csp' });
+			multiplexer.mode = 'csp';
 		}
 	}
 	count+=1;
@@ -278,6 +291,7 @@ function getMultiplexer(baseUri) {
 
 function releaseMultiplexer() {
 	if (--count == 0) {
+		
 		multiplexer.transport.loseConnection();
 		multiplexer = null;
 	}
@@ -341,7 +355,7 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	}
 	this._sendClose = function(id) {
 		this.sendFrame(id, CLOSE_FRAME);
-	}	
+	}
 
 	this.sendFrame = function(id, type, payload) {
 		payload = payload || "";
@@ -355,7 +369,7 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	
 	this.connectionMade = function() {
 		this._connected = true;
-		
+//		this.transport.setEncoding('plain');
 		for (id in this._connections) {
 			this._sendOpen(id);
 		}
@@ -399,7 +413,6 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	}
 	
 	this.bufferUpdated = function() {
-
 		while (true) {
 			if (this._size == -1) {
 				if (this.buffer.hasDelimiter(DELIMITER)) {
