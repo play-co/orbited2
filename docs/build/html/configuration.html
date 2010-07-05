@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+    Configuration
+ &mdash; orbited2 v0.2.0 documentation</title>
+        
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '#',
+          VERSION:     '0.2.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="orbited2 v0.2.0 documentation" href="index.html" />
+        <link rel="next" title="&lt;no title&gt;" href="websocket.html" />
+        <link rel="prev" title="Introduction" href="intro.html" />
+    
+
+    </head>
+    <body>
+        
+
+
+
+
+        <h1>orbited2 v0.2.0 documentation</h1>
+
+        <div id="search">
+        Search:
+        <form class="search" action="search.html" method="get">
+          <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        </div>
+
+        <div class="versionheader">
+            Version: <span class="versionnum">0.2.0</span> Last Updated: None
+        </div>
+        <div class="clearboth"></div>
+
+        <div class="topnav">
+            <div id="pagecontrol">
+                <a href="reference/index.html">API Reference</a>
+                |
+                <a href="genindex.html">Index</a>
+            
+                <div class="sourcelink">(<a href="_sources/configuration.txt">view source)</div>
+            </div>
+            
+            <div class="navbanner">
+                <a class="totoc" href="index.html">Table of Contents</a>
+                » 
+    Configuration
+ 
+                
+                
+<div class="prevnext">
+        Previous:
+        <a href="intro.html" title="previous chapter">Introduction</a>
+        Next:
+        <a href="websocket.html" title="next chapter">&lt;no title&gt;</a>
+</div>
+
+                <h2>
+                    
+    Configuration
+ 
+                </h2>
+            </div>
+                <ul>
+<li><a class="reference external" href="#">Configuration</a><ul>
+<li><a class="reference external" href="#overview">Overview</a></li>
+<li><a class="reference external" href="#remotedestination">RemoteDestination</a><ul>
+<li><a class="reference external" href="#name-required">name (required)</a></li>
+<li><a class="reference external" href="#hostname-required">hostname (required)</a></li>
+<li><a class="reference external" href="#port-required">port (required)</a></li>
+<li><a class="reference external" href="#host-header-required">host_header (required)</a></li>
+<li><a class="reference external" href="#protocol">protocol</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#listen">Listen</a><ul>
+<li><a class="reference external" href="#interface-required">interface (required)</a></li>
+<li><a class="reference external" href="#id1">port (required)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <div class="clearboth"></div>
+        </div>
+        
+        <div class="document">
+            <div class="body">
+                
+<div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Orbited2 takes a single command line argument, -c (or &#8211;config) and the file location of your config file. The default is orbited2.cfg. This config file has two directives.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>A user would run:</p>
+<div class="highlight-none"><div class="highlight"><pre>user@host:~# orbited2 --config /etc/orbited2.cfg</pre></div>
+</div>
+<p>A configuration example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Contents of /etc/orbited2.cfg</span>
+
+<span class="c"># Access Control</span>
+
+<span class="n">RemoteDestination</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">&quot;ws_echo&quot;</span><span class="p">,</span> <span class="c"># for logging purposes</span>
+    <span class="n">hostname</span><span class="o">=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">8083</span><span class="p">,</span>
+    <span class="n">host_header</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="c"># let any scripts from anywhere access this remote destination</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;ws/hixie76&quot;</span> <span class="c"># normalize outgoing connections to WebSocket draft 76</span>
+<span class="p">)</span>
+
+<span class="c"># Listen</span>
+
+<span class="n">Listen</span> <span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+    <span class="n">interface</span><span class="o">=</span><span class="s">&quot;0.0.0.0&quot;</span> <span class="c"># bind to all ports</span>
+<span class="p">)</span></pre></div>
+</div>
+</div>
+<div class="section" id="remotedestination">
+<h2>RemoteDestination<a class="headerlink" href="#remotedestination" title="Permalink to this headline">¶</a></h2>
+<p>The RemoteDestination directive specifies a remote server that Orbited2 will proxy to. If a webpage tries to use Orbited2 to open a connection to a remote destination that has no corresponding RemoteDestination directive, the connection will be denied. You may have as many remote destinations as you like, so long as they are each given a unique name.</p>
+<div class="section" id="name-required">
+<h3>name (required)<a class="headerlink" href="#name-required" title="Permalink to this headline">¶</a></h3>
+<p>Unique name for logging purposes</p>
+</div>
+<div class="section" id="hostname-required">
+<h3>hostname (required)<a class="headerlink" href="#hostname-required" title="Permalink to this headline">¶</a></h3>
+<p>Destination hostname</p>
+</div>
+<div class="section" id="port-required">
+<h3>port (required)<a class="headerlink" href="#port-required" title="Permalink to this headline">¶</a></h3>
+<p>Destination port</p>
+</div>
+<div class="section" id="host-header-required">
+<h3>host_header (required)<a class="headerlink" href="#host-header-required" title="Permalink to this headline">¶</a></h3>
+<p>All connections to this remote destination via orbited will only be authorized if the &#8220;Host&#8221; header in the initial HTTP request matches the value of this rule. This value should just be the domain name of your website, in most cases. For testing purposes you may put a &#8216;*&#8217; here.</p>
+</div>
+<div class="section" id="protocol">
+<h3>protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h3>
+<p>The outgoing protocol. The default is &#8220;ws/hixie76&#8221;. Valid options are: &#8220;tcp&#8221;, &#8220;ws/hixie75&#8221;, and &#8220;ws/hixie76&#8221;. We will support new versions of the WebSocket protocol as they are released.</p>
+<p>If you are using the Orbited.TCPSocket javascript api, then the value of protocol must be &#8216;tcp&#8217;.</p>
+<p>If you are using the Orbited.WebSocket.install javascript api, the <cite>protocolVersion</cite> value given there should match the revision number given here.</p>
+</div>
+</div>
+<div class="section" id="listen">
+<h2>Listen<a class="headerlink" href="#listen" title="Permalink to this headline">¶</a></h2>
+<p>The Listen directive specifies an interface and port where Orbited2 should listen, as well as a set of protocols it should listen for. You may have as many Listen directives as you like. An example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Listen</span> <span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+    <span class="n">interface</span><span class="o">=</span><span class="s">&quot;0.0.0.0&quot;</span>
+<span class="p">)</span></pre></div>
+</div>
+<div class="section" id="interface-required">
+<h3>interface (required)<a class="headerlink" href="#interface-required" title="Permalink to this headline">¶</a></h3>
+<p>A string representing the interface that hookbox should bind to.</p>
+</div>
+<div class="section" id="id1">
+<h3>port (required)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>An integer specifying the port that hookbox should bind to.</p>
+</div>
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+        
+            <div class="bottomnav">
+                
+<div class="prevnext">
+        Previous:
+        <a href="intro.html" title="previous chapter">Introduction</a>
+        Next:
+        <a href="websocket.html" title="next chapter">&lt;no title&gt;</a>
+</div>
+
+                <div class="doc_copyright">
+                    &copy; Copyright 2010, Michael Carter.
+                    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
+                </div>
+            </div>
+        
+
+
+
+
+
+
+    </body>
+</html>
+
+
+
