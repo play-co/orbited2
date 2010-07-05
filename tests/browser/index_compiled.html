@@ -1,7 +1,7 @@
 <head>
   <script src="Orbited2.js"></script>
   <script>
-	Orbited.WebSocket.install({
+	Orbited2.WebSocket.install({
 		orbitedUri: "http://127.0.0.1:8000"
 	});
 	var ws = null;
@@ -12,7 +12,7 @@
 			ws.send("Hello!");
 		}
 		ws.onmessage = function(msg) {
-			console.log('websocket onmessage:', msg);
+			console.log('websocket onmessage:', msg.data);
 		}
 		ws.onclose = function() {
 			console.log('websocket onclose');

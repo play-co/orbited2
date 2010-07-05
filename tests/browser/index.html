@@ -10,9 +10,9 @@
 }
 	jsio('from base import logging');
 	logging.get('net.protocols.buffered').setLevel(0);
-  jsio('import .Orbited2_raw as Orbited');
+  jsio('import .Orbited2_raw as Orbited2');
   
-	Orbited.WebSocket.install({
+	Orbited2.WebSocket.install({
 		orbitedUri: "http://127.0.0.1:8000",
 		protocolVersion: 'hixie76'
 	});
