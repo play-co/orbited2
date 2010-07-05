@@ -58,7 +58,8 @@ class SockWebSocketWrapper(object):
     def recv(self, num):
         # not quite right (ignore num)... but close enough for our use.
         data = self._ws.wait()
-        data = data.encode('utf-8')
+        if data:
+            data = data.encode('utf-8')
         return data
 
     def __getattr__(self, key):

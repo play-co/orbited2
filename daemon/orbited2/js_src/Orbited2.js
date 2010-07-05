@@ -42,19 +42,19 @@ var READYSTATE_CLOSED = 3;
 exports.TCPSocket = Class(function() {
 	
 	this.init = function(opts) {
-		this._proxyUri = opts.proxyUri || defaultOrbitedUri;
-		if (!this._proxyUri.match('/$')) {
-			this._proxyUri += '/';
+		this._orbitedUri  = opts.orbitedUri || defaultOrbitedUri;
+		if (!this._orbitedUri.match('/$')) {
+			this._orbitedUri += '/';
 		}
 		this.readyState = READYSTATE_WAITING;
 		this._buffer = "";
 	}
 	
 	this.open = function(host, port, isBinary) {
-		if (!this._proxyUri) {
-			throw new Error("Could not automatically determine Orbited's uri, and Orbited.TCPSocket.opts.proxyUri was not manually specified in TCPSocket constructor");
+		if (!this._orbitedUri) {
+			throw new Error("Could not automatically determine Orbited's uri, and Orbited.TCPSocket.opts.orbitedUri was not manually specified in TCPSocket constructor");
 		}
-		var multiplexer = getMultiplexer(this._proxyUri);
+		var multiplexer = getMultiplexer(this._orbitedUri);
 		this._isBinary = !!isBinary;
 		this._host = host;
 		this._port = port;
@@ -121,7 +121,7 @@ exports.TCPSocket = Class(function() {
 		// TODO: use real signal handlers and real events
 		var fn = this['on' + signal];
 		if (fn) {
-			fn.call(this, { data: data});
+			fn.call(this, data);
 		}
 	}
 
@@ -137,7 +137,7 @@ exports.WebSocket = Class(function() {
 		this.URL = url;
 		this.readyState = READYSTATE_CONNECTING;
 		this.bufferedAmount = 0;
-		var multiplexer = getMultiplexer(exports.WebSocket.opts.proxyUri);
+		var multiplexer = getMultiplexer(exports.WebSocket.opts.orbitedUri);
 		this._conn = multiplexer.openConnection();
 		this._conn.onOpen = bind(this, _onOpen);
 		this._conn.onFrame = bind(this, _onFrame);
@@ -230,14 +230,14 @@ exports.WebSocket.install = function(opts) {
 function validateOpts(opts) {
 	opts.protocolVersion = opts.protocolVersion || 'hixie76';
 	opts.forceProxy = !!opts.forceProxy;
-	if (!opts.proxyUri) {
-		opts.proxyUri = defaultOrbitedUri;
+	if (!opts.orbitedUri) {
+		opts.orbitedUri = defaultOrbitedUri;
 	}
-	if (!opts.proxyUri) {
-			throw new Error("proxyUri undefined, and unable to auto-detect based on script tag includes");
+	if (!opts.orbitedUri) {
+			throw new Error("orbitedUri not specified; unable to auto-detect it based on script tag includes");
 	}
-	if (!opts.proxyUri.match('/$')) {
-		opts.proxyUri += '/';
+	if (!opts.orbitedUri.match('/$')) {
+		opts.orbitedUri += '/';
 	}
 }
 

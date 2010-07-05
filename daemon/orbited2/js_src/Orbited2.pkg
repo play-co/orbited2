@@ -1,6 +1,6 @@
 {
-    "root": "Orbited",
-    "externalName": "Orbited",
+    "root": "Orbited2",
+    "externalName": "Orbited2",
     "transports": ["csp"],
     "environments": ["browser"],
     "additional_dependancies": [ ]

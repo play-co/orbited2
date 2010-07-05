@@ -1,0 +1,1 @@
+../../daemon/orbited2/static/Orbited2.js

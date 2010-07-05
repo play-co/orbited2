@@ -1,12 +1,12 @@
 <head>
-  <script src="Orbited.js"></script>
+  <script src="Orbited2.js"></script>
   <script>
 	Orbited.WebSocket.install({
-		proxyUri: "http://localhost:8000"
+		orbitedUri: "http://127.0.0.1:8000"
 	});
 	var ws = null;
 	function connect() {
-		ws = new WebSocket('ws://localhost:8013/echo');
+		ws = new WebSocket('ws://127.0.0.1:8013/echo');
 		ws.onopen = function() {
 			console.log('websocket onopen');
 			ws.send("Hello!");

@@ -8,11 +8,11 @@
    }
    return out.join("");
 }
-  jsio('import .Orbited_raw as Orbited');
+  jsio('import .Orbited2_raw as Orbited');
 	var sock = null;
 	function connect() {
-		sock = new Orbited.TCPSocket({ proxyUri: "http://localhost:8000"});
-		sock.open('localhost', 8014);
+		sock = new Orbited.TCPSocket({ orbitedUri: "http://127.0.0.1:8000"});
+		sock.open('127.0.0.1', 8014);
 		sock.onopen = function() {
 			console.log('TCPSocket onopen');
 			sock.send("Hello!");
