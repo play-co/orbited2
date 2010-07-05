@@ -1,1 +1,1 @@
-../../orbited2/static/Orbited.js
+../../daemon/orbited2/static/Orbited.js

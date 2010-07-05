@@ -5,7 +5,10 @@ jsio('import std.JSON');
 jsio('import std.utf8 as utf8');
 
 
-var DEFAULT_BASE_URI;
+var baseUri = new std.uri.Uri(window.location);
+
+var defaultOrbitedUri;
+
 function setup() {
 	var scripts = document.getElementsByTagName('script');
 	for (var i = 0, script; script = scripts[i]; ++i) {
@@ -13,8 +16,7 @@ function setup() {
 		if (script.src.match('(^|/)' + MATCH_STRING + '$')) {
 			found = true;
 			var uri = new std.uri.Uri(script.src.substring(0, script.src.length-MATCH_STRING.length));
-			var baseUri = new std.uri.Uri(window.location);
-			DEFAULT_BASE_URI = ((uri.getProtocol() || baseUri.getProtocol()) + "://" +
+			defaultOrbitedUri = ((uri.getProtocol() || baseUri.getProtocol()) + "://" +
 					(uri.getHost() || baseUri.getHost()) + ":" + (uri.getPort() || baseUri.getPort() || '80') +
 					(uri.getPath() || baseUri.getPath()));
 			break;
@@ -22,7 +24,7 @@ function setup() {
 	}
 }
 setup();
-logger.info('DEFAULT_BASE_URI', DEFAULT_BASE_URI);
+logger.info('defaultOrbitedUri', defaultOrbitedUri);
 
 
 
@@ -38,7 +40,7 @@ var READYSTATE_CLOSED = 3;
 exports.TCPSocket = Class(function() {
 	
 	this.init = function(opts) {
-		this._proxyUri = opts.proxyUri || DEFAULT_BASE_URI;
+		this._proxyUri = opts.proxyUri || defaultOrbitedUri;
 		if (!this._proxyUri.match('/$')) {
 			this._proxyUri += '/';
 		}
@@ -74,7 +76,6 @@ exports.TCPSocket = Class(function() {
 		this._conn.send(JSON.stringify({
 			hostname: this._host,
 			port: this._port,
-			origin: document.location.toString(),
 			protocol: 'tcp'
 		}));
 	}
@@ -128,11 +129,7 @@ exports.TCPSocket = Class(function() {
 	
 });
 
-
-
 // WebSocket code
-
-
 
 exports.WebSocket = Class(function() {
 	
@@ -167,9 +164,11 @@ exports.WebSocket = Class(function() {
 	
 	this._onOpen = function() {
 		logger.info('onOpen!');
+		var uri = new std.uri.Uri(this._url);
 		this._conn.send(JSON.stringify({
-			origin: document.location.toString(),
-			url: this._url,
+			hostname: uri.getHost(),
+			port: parseInt(uri.getPort()) || (uri.getProtocol() == 'ws' ? 80 : 443),
+			path: uri.getPath() || "/",
 			protocol: 'ws_' + exports.WebSocket.opts.protocolVersion
 		}));
 	}
@@ -234,7 +233,7 @@ function validateOpts(opts) {
 	opts.protocolVersion = opts.protocolVersion || 'hixie75';
 	opts.forceProxy = !!opts.forceProxy;
 	if (!opts.proxyUri) {
-		opts.proxyUri = DEFAULT_BASE_URI;
+		opts.proxyUri = defaultOrbitedUri;
 	}
 	if (!opts.proxyUri) {
 			throw new Error("proxyUri undefined, and unable to auto-detect based on script tag includes");

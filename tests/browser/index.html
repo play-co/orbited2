@@ -12,7 +12,8 @@
 	logging.get('net.protocols.buffered').setLevel(0);
   jsio('import .Orbited_raw as Orbited');
 	Orbited.WebSocket.install({
-		proxyUri: "http://localhost:8000"
+		proxyUri: "http://localhost:8000",
+		protocolVersion: 'hixie76'
 	});
 	var ws = null;
 	function connect() {

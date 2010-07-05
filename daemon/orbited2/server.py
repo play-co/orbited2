@@ -11,25 +11,25 @@ class OrbitedServer(object):
     def __init__(self, config):
         self._config = config
         self._csp_sock = csp_eventlet.Listener()
-        self._wsgi_app = URLMap()
-        self._wsgi_app['/csp'] = self._csp_sock
-        self._wsgi_app['/ws'] = self._wsgi_websocket
+        self._init_listen_rules()
+        
+    def _init_listen_rules(self): 
+        self._wsgi_apps = {}
         static_path = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'static')
-        self._wsgi_app['/static'] = static.Cling(static_path)
-        
-#        self._framed_sock = framed_sock.Listener(self._csp_sock)
-        
-        self.port = 8000
-        self.interface = '127.0.0.1'
-        self._bound_socket = None
+        for rule in self._config.rules['Listen']:
+            wsgi_app = URLMap()
+            wsgi_app['/static'] = static.Cling(static_path)            
+            if 'ws' in rule.protocols:
+                wsgi_app['/ws'] = self._wsgi_websocket
+            if 'csp' in rule.protocols:
+                wsgi_app['/csp'] = self._csp_sock
+            self._wsgi_apps[(rule.interface, rule.port)] = wsgi_app
+
 
     def run(self):
-        if not self._bound_socket:
-            self._bound_socket = eventlet.listen((self.interface, self.port))
-        # TODO: get the interface/port from the bound socket
-        print "Orbited listening on http://%s:%s" % (self.interface or "0.0.0.0", self.port)
-        
-        eventlet.spawn(eventlet.wsgi.server, self._bound_socket, self._wsgi_app, log=EmptyLogShim())
+        for (iface, port), app in self._wsgi_apps.items():
+            print "Orbited listening on http://%s:%s" % (iface or "0.0.0.0", port)
+            eventlet.spawn(eventlet.wsgi.server, eventlet.listen((iface,port)), app, log=EmptyLogShim())
         ev = eventlet.event.Event()        
         eventlet.spawn(self._run, ev)
         return ev
@@ -44,7 +44,7 @@ class OrbitedServer(object):
                 break
 
     def _accepted(self, sock, addr=None):
-        protocol.OrbitedProtocol(self, sock, addr)
+        protocol.OrbitedProtocol(self, self._config.rules['RemoteDestination'], sock, addr)
 
     @eventlet.websocket.WebSocketWSGI
     def _wsgi_websocket(self, sock):

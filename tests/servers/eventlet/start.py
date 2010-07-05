@@ -19,7 +19,8 @@ def handle(ws):
         print 'GOT', m
         if m is None:
             break
-        ws.send(m)
+        for i in range(3):
+            ws.send(str(i+1) + ": " + m)
                   
 
 def listen_tcp():
@@ -27,7 +28,8 @@ def listen_tcp():
         while True:
             data = client.recv(1024)
             if not data: break
-            client.sendall(data)
+            for i in range(20):
+                client.sendall(str(i) + ': ' + data)
     server = eventlet.listen(('localhost', 8014))
     print "Now listening echo:8014"
     pool = eventlet.GreenPool(10000)
