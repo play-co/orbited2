@@ -277,7 +277,7 @@ function getMultiplexer(baseUri) {
 			var uri = new std.uri.Uri(baseUri);
 			uri.setProtocol('ws');
 			var url = uri.render() + 'ws';
-			net.connect(multiplexer, 'websocket', { url: url, constructor: originalWebSocket });
+			net.connect(multiplexer, 'websocket', { url: url, wsConstructor: originalWebSocket });
 			multiplexer.mode = 'ws';
 		}
 		else { // Fallback ot csp

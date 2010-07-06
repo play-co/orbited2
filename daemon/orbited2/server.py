@@ -62,6 +62,13 @@ class SockWebSocketWrapper(object):
             data = data.encode('utf-8')
         return data
 
+    def send(self, data):
+        self._ws.send(data)
+        return len(data)
+
+    def sendall(self, data):
+        self.send(data)
+
     def __getattr__(self, key):
         return getattr(self._ws, key)
 

@@ -1,0 +1,6 @@
+recursive-include orbited2 *.js
+recursive-include orbited2 *.html
+recursive-include orbited2 *.css
+recursive-include orbited2 *.jpg
+recursive-include orbited2 *.png
+recursive-include orbited2 *.gif

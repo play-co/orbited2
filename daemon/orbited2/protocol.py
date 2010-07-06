@@ -77,7 +77,7 @@ class OrbitedProtocol(object):
         payload = str(id) + ',' + str(frame_type) + ',' + data
         frame = str(len(payload)) + ',' + payload
 #        print "SEND->Browser", repr(frame)
-        self._sock.send(frame)
+        self._sock.sendall(frame)
             
 class BrowserConn(object):
     
