@@ -61,7 +61,7 @@ For all of you Orbited veterans who aren't so sure about writing WebSocket serve
 Installation
 ============
 
-Orbited2 is written in python and depends on setuptools for installation. The fastest way to install hookbox is to type: 
+Orbited2 is written in python and depends on setuptools for installation. The easiest way to install Orbited2 is to type: 
 
 .. sourcecode:: none
 
