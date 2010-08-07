@@ -267,7 +267,7 @@ var count = 0;
 
 function getMultiplexer(baseUri) {
 	if (!multiplexer) {
-		multiplexer = new OrbitedMultiplexingProtocol();
+		multiplexer = new OrbitedMultiplexingProtocol(baseUri);
 		multiplexer.onClose = function() {
 			multiplexer = null;
 		}
@@ -278,11 +278,13 @@ function getMultiplexer(baseUri) {
 			uri.setProtocol('ws');
 			var url = uri.render() + 'ws';
 			net.connect(multiplexer, 'websocket', { url: url, wsConstructor: originalWebSocket });
+			multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'websocket');
 			multiplexer.mode = 'ws';
 		}
 		else { // Fallback ot csp
 			net.connect(multiplexer, 'csp', { url: baseUri + 'csp' });
 			multiplexer.mode = 'csp';
+			multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'csp');
 		}
 	}
 	count+=1;
@@ -327,8 +329,9 @@ var Connection = Class(function() {
 
 var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	
-	this.init = function() {
+	this.init = function(baseUri) {
 		supr(this, 'init', arguments);
+		this._baseUri = baseUri;
 		this._connections = {};
 		this._last_id = -1;
 		this._size = -1;
@@ -377,13 +380,17 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	
 	//callback 
 	this.onClose = function() { }
-	
-	this.connectionLost = function() {
-		this.onClose();
-		for (id in this._connections) {
-			this._connections[id].onClose();
+
+	this._connectionLost = function(transportName, reason, wasConnected) {
+		if (!wasConnected) {
+			if (transportName == 'websocket') {
+				net.connect(this, 'csp', {url: this._baseUri + 'csp' });
+				this.connectionLost = bind(this, '_connectionLost', 'csp');
+				this.mode = 'csp';
+			}
+		} else {
+			this.onClose();
 		}
-		
 	}
 
 	this._dispatchPayload = function(payload) {
