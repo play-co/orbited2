@@ -4,7 +4,8 @@ jsio('import std.uri');
 jsio('import std.JSON');
 jsio('import std.utf8 as utf8');
 
-
+exports.logging = logging;
+exports.logger = logger;
 var originalWebSocket = window.WebSocket;
 
 
@@ -48,13 +49,14 @@ exports.TCPSocket = Class(function() {
 		}
 		this.readyState = READYSTATE_WAITING;
 		this._buffer = "";
+		this._forceTransport = opts.forceTransport;
 	}
 	
 	this.open = function(host, port, isBinary) {
 		if (!this._orbitedUri) {
 			throw new Error("Could not automatically determine Orbited's uri, and Orbited.TCPSocket.opts.orbitedUri was not manually specified in TCPSocket constructor");
 		}
-		var multiplexer = getMultiplexer(this._orbitedUri);
+		var multiplexer = getMultiplexer(this._orbitedUri, this._forceTransport);
 		this._isBinary = !!isBinary;
 		this._host = host;
 		this._port = port;
@@ -265,26 +267,36 @@ function hasNativeWebSocket(rev) {
 var multiplexer = null;
 var count = 0;
 
-function getMultiplexer(baseUri) {
+function getMultiplexer(baseUri, forceTransport) {
+	logger.debug('getMultiplexer', baseUri, forceTransport);
 	if (!multiplexer) {
 		multiplexer = new OrbitedMultiplexingProtocol(baseUri);
 		multiplexer.onClose = function() {
 			multiplexer = null;
 		}
 		// TODO: Choose transport
-		
-		if (!!originalWebSocket) { 
-			var uri = new std.uri.Uri(baseUri);
-			uri.setProtocol('ws');
-			var url = uri.render() + 'ws';
-			net.connect(multiplexer, 'websocket', { url: url, wsConstructor: originalWebSocket });
-			multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'websocket');
-			multiplexer.mode = 'ws';
+		var _transport = forceTransport;
+		if (!_transport) {
+			if (!!originalWebSocket) { _transport = 'ws'; }
+			else { _transport = 'csp'; }
 		}
-		else { // Fallback ot csp
-			net.connect(multiplexer, 'csp', { url: baseUri + 'csp' });
-			multiplexer.mode = 'csp';
-			multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'csp');
+		logger.debug('_transport is', _transport);
+		switch(_transport) {
+			case 'ws':
+				var uri = new std.uri.Uri(baseUri);
+				uri.setProtocol('ws');
+				var url = uri.render() + 'ws';
+				logger.debug('connecting with ws')
+				net.connect(multiplexer, 'websocket', { url: url, wsConstructor: originalWebSocket });
+				multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'websocket');
+				multiplexer.mode = 'ws';
+				break;
+			case 'csp':
+				logger.debug('connecting with csp')
+				net.connect(multiplexer, 'csp', { url: baseUri + 'csp' });
+				multiplexer.mode = 'csp';
+				multiplexer.connectionLost = bind(multiplexer, '_connectionLost', 'csp');
+				break;
 		}
 	}
 	count+=1;
@@ -339,9 +351,11 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	}
 
 	this.openConnection = function() {
+		logger.debug('opening multiplexing connection');
 		var id = ++this._last_id;
 		var conn = this._connections[id] = new Connection(this, id);
 		if (this._connected) {
+			logger.debug('already opened, triggering now');
 			this._sendOpen(id);
 		}
 		return conn;
@@ -371,6 +385,7 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 	}
 	
 	this.connectionMade = function() {
+		logger.debug('connectionMade on multiplexer');
 		this._connected = true;
 //		this.transport.setEncoding('plain');
 		for (id in this._connections) {
