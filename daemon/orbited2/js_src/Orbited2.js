@@ -3,9 +3,11 @@ jsio('import net');
 jsio('import std.uri');
 jsio('import std.JSON');
 jsio('import std.utf8 as utf8');
+jsio('import lib.Enum as Enum');
 
 exports.logging = logging;
 exports.logger = logger;
+
 var originalWebSocket = window.WebSocket;
 
 
@@ -14,40 +16,44 @@ var baseUri = new std.uri.Uri(window.location);
 var defaultOrbitedUri;
 
 function setup() {
-	var scripts = document.getElementsByTagName('script');
+	var scripts = document.getElementsByTagName('script'),
+		target = 'Orbited.js',
+		re = new RegExp('(^|/)' + target + '$');
+	
 	for (var i = 0, script; script = scripts[i]; ++i) {
-		var MATCH_STRING = 'Orbited.js'
-		if (script.src.match('(^|/)' + MATCH_STRING + '$')) {
-			found = true;
-			var uri = new std.uri.Uri(script.src.substring(0, script.src.length-MATCH_STRING.length));
-			defaultOrbitedUri = ((uri.getProtocol() || baseUri.getProtocol()) + "://" +
-					(uri.getHost() || baseUri.getHost()) + ":" + (uri.getPort() || baseUri.getPort() || '80') +
-					(uri.getPath() || baseUri.getPath()));
+		var src = script.src;
+		if (re.test(src)) {
+			var uri = new std.uri.Uri(src.substring(0, src.length - target.length));
+			defaultOrbitedUri = ((uri.getProtocol() || baseUri.getProtocol())
+					+ "://"
+					+ (uri.getHost() || baseUri.getHost()) + ":"
+					+ (uri.getPort() || baseUri.getPort() || '80')
+					+ (uri.getPath() || baseUri.getPath()));
 			break;
 		}
 	}
 }
+
 setup();
-
-
-
 
 // TCPSocket code
 
-var READYSTATE_WAITING = -1;
-var READYSTATE_CONNECTING = 0;
-var READYSTATE_OPEN = 1;
-var READYSTATE_CLOSING = 2;
-var READYSTATE_CLOSED = 3;
+var READY_STATE = Enum({
+	WAITING: -1,
+	CONNECTING: 0,
+	OPEN: 1,
+	CLOSING: 2,
+	CLOSED: 3
+});
 
 exports.TCPSocket = Class(function() {
 	
 	this.init = function(opts) {
 		this._orbitedUri  = opts.orbitedUri || defaultOrbitedUri;
-		if (!this._orbitedUri.match('/$')) {
+		if (!/\/$/.test(this._orbitedUri)) {
 			this._orbitedUri += '/';
 		}
-		this.readyState = READYSTATE_WAITING;
+		this.readyState = READY_STATE.WAITING;
 		this._buffer = "";
 		this._forceTransport = opts.forceTransport;
 	}
@@ -64,12 +70,12 @@ exports.TCPSocket = Class(function() {
 		this._conn.onOpen = bind(this, _onOpen);
 		this._conn.onFrame = bind(this, _onFrame);
 		this._conn.onClose = bind(this, _onClose);
-		this.readyState = READYSTATE_CONNECTING;
+		this.readyState = READY_STATE.CONNECTING;
 	}
 	
 	var _onClose = function() {
-		if (this.readyState == READYSTATE_CLOSED) { return; }
-		this.readyState = READYSTATE_CLOSED;
+		if (this.readyState == READY_STATE.CLOSED) { return; }
+		this.readyState = READY_STATE.CLOSED;
 		releaseMultiplexer();
 		bind(this, _trigger)('close');
 	}
@@ -84,15 +90,15 @@ exports.TCPSocket = Class(function() {
 	
 	var _onFrame = function(payload) {
 		switch(this.readyState) {
-			case READYSTATE_CONNECTING:
+			case READY_STATE.CONNECTING:
 				if (payload == '1') {
-					this.readyState = READYSTATE_OPEN;
+					this.readyState = READY_STATE.OPEN;
 					bind(this, _trigger)('open');
 				} else {
 					this._onClose();
 				}
 				break;
-			case READYSTATE_OPEN:
+			case READY_STATE.OPEN:
 				this._buffer += payload;
 				var result = utf8.decode(this._buffer);
 				payload= result[0];
@@ -105,7 +111,7 @@ exports.TCPSocket = Class(function() {
 	}
 	
 	this.send = function(data) {
-		if ( this.readyState >= READYSTATE_CLOSING) { return; }
+		if (this.readyState >= READY_STATE.CLOSING) { return; }
 		if (!this._isBinary) {
 			data = utf8.encode(data)
 		}
@@ -113,8 +119,8 @@ exports.TCPSocket = Class(function() {
 	}
 	
 	this.close = function() {
-		if (this.readyState >= READYSTATE_CLOSING) { return; }
-		this.readyState = READYSTATE_CLOSING;
+		if (this.readyState >= READY_STATE.CLOSING) { return; }
+		this.readyState = READY_STATE.CLOSING;
 		this._conn.close();
 		this._conn.onClose = bind(this, '_onClose');
 	}
@@ -126,8 +132,6 @@ exports.TCPSocket = Class(function() {
 			fn.call(this, data);
 		}
 	}
-
-	
 });
 
 // WebSocket code
@@ -137,7 +141,7 @@ exports.WebSocket = Class(function() {
 	this.init = function(url, protocol) {
 		// TODO: what do we do with protocol?
 		this.URL = url;
-		this.readyState = READYSTATE_CONNECTING;
+		this.readyState = READY_STATE.CONNECTING;
 		this.bufferedAmount = 0;
 		var multiplexer = getMultiplexer(exports.WebSocket.opts.orbitedUri);
 		this._conn = multiplexer.openConnection();
@@ -154,14 +158,14 @@ exports.WebSocket = Class(function() {
 	}
 	
 	this.send = function(data) {
-		if ( this.readyState >= READYSTATE_CLOSING) { return; }
+		if (this.readyState >= READY_STATE.CLOSING) { return; }
 		data = utf8.encode(data);
 		this._conn.send(data);
 	}
 	
 	var _onClose = function() {
-		if (this.readyState == READYSTATE_CLOSED) { return; }
-		this.readyState = READYSTATE_CLOSED;
+		if (this.readyState == READY_STATE.CLOSED) { return; }
+		this.readyState = READY_STATE.CLOSED;
 		releaseMultiplexer();
 		bind(this, _trigger)('close');
 	}
@@ -178,15 +182,15 @@ exports.WebSocket = Class(function() {
 	
 	var _onFrame = function(payload) {
 		switch(this.readyState) {
-			case READYSTATE_CONNECTING:
+			case READY_STATE.CONNECTING:
 				if (payload == '1') {
-					this.readyState = READYSTATE_OPEN;
+					this.readyState = READY_STATE.OPEN;
 					bind(this, _trigger)('open');
 				} else {
 					this._onClose();
 				}
 				break;
-			case READYSTATE_OPEN:
+			case READY_STATE.OPEN:
 				var result = utf8.decode(payload);
 				// TODO: what about result[1] (leftover) ?
 				// TODO: what about "U+FFFD REPLACEMENT CHARACTER" ?
@@ -204,8 +208,8 @@ exports.WebSocket = Class(function() {
 	}
 	
 	this.close = function() {
-		if (this.readyState >= READYSTATE_CLOSING) { return; }
-		this.readyState = READYSTATE_CLOSING;
+		if (this.readyState >= READY_STATE.CLOSING) { return; }
+		this.readyState = READY_STATE.CLOSING;
 		this._conn.close();
 		this._conn.onClose = bind(this, _onClose);
 	}
@@ -299,7 +303,8 @@ function getMultiplexer(baseUri, forceTransport) {
 				break;
 		}
 	}
-	count+=1;
+	
+	++count;
 	return multiplexer;
 }
 
@@ -311,9 +316,7 @@ function releaseMultiplexer() {
 	}
 }
 
-var OPEN_FRAME = 0;
-var CLOSE_FRAME = 1;
-var DATA_FRAME = 2;
+var FRAME = Enum('OPEN', 'CLOSE', 'DATA');
 DELIMITER = ',';
 
 var Connection = Class(function() {
@@ -325,7 +328,7 @@ var Connection = Class(function() {
 	
 	this.send = function(data) {
 		this._id = id;
-		this._multiplexer.sendFrame(this._id, DATA_FRAME, data);
+		this._multiplexer.sendFrame(this._id, FRAME.DATA, data);
 	}
 	this.close = function() {
 		this._multiplexer.closeConnection(this._id);
@@ -368,10 +371,10 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 		}
 	}
 	this._sendOpen = function(id) {
-		this.sendFrame(id, OPEN_FRAME);
+		this.sendFrame(id, FRAME.OPEN);
 	}
 	this._sendClose = function(id) {
-		this.sendFrame(id, CLOSE_FRAME);
+		this.sendFrame(id, FRAME.CLOSE);
 	}
 
 	this.sendFrame = function(id, type, payload) {
@@ -420,15 +423,16 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 		if (!conn || typeof(frameType) != 'number') {
 			return; // ERR
 		}
+		
 		switch(frameType) {
-			case OPEN_FRAME:
+			case FRAME.OPEN:
 				conn.onOpen();
 				break;
-			case CLOSE_FRAME:
+			case FRAME.CLOSE:
 				delete this._connections[id];
 				conn.onClose();
 				break;
-			case DATA_FRAME:
+			case FRAME.DATA:
 				conn.onFrame(data);
 				break;
 		}
@@ -456,5 +460,4 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 			this._size = -1;
 		}
 	}
-	
 });
