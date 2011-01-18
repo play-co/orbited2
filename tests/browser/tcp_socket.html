@@ -11,7 +11,7 @@
   jsio('import .Orbited2_raw as Orbited2');
 	var sock = null;
 	function connect() {
-		sock = new Orbited2.TCPSocket({ orbitedUri: "http://127.0.0.1:8000"});
+		sock = new Orbited2.TCPSocket({ orbitedUri: "http://127.0.0.1:8000", forceTransport: "csp"});
 		sock.open('127.0.0.1', 8014);
 		sock.onopen = function() {
 			console.log('TCPSocket onopen');

@@ -1,6 +1,6 @@
 jsio('from net.protocols.buffered import BufferedProtocol')
 jsio('import net');
-jsio('import std.uri');
+jsio('import std.uri as Uri');
 jsio('import std.JSON');
 jsio('import std.utf8 as utf8');
 jsio('import lib.Enum as Enum');
@@ -8,10 +8,12 @@ jsio('import lib.Enum as Enum');
 exports.logging = logging;
 exports.logger = logger;
 
+//logger.setLevel(0)
+
 var originalWebSocket = window.WebSocket;
 
 
-var baseUri = new std.uri.Uri(window.location);
+var baseUri = new Uri(window.location);
 
 var defaultOrbitedUri;
 
@@ -23,7 +25,7 @@ function setup() {
 	for (var i = 0, script; script = scripts[i]; ++i) {
 		var src = script.src;
 		if (re.test(src)) {
-			var uri = new std.uri.Uri(src.substring(0, src.length - target.length));
+			var uri = new Uri(src.substring(0, src.length - target.length));
 			defaultOrbitedUri = ((uri.getProtocol() || baseUri.getProtocol())
 					+ "://"
 					+ (uri.getHost() || baseUri.getHost()) + ":"
@@ -171,7 +173,7 @@ exports.WebSocket = Class(function() {
 	}
 	
 	var _onOpen = function() {
-		var uri = new std.uri.Uri(this.URL);
+		var uri = new Uri(this.URL);
 		this._conn.send(JSON.stringify({
 			hostname: uri.getHost(),
 			port: parseInt(uri.getPort()) || (uri.getProtocol() == 'ws' ? 80 : 443),
@@ -287,7 +289,7 @@ function getMultiplexer(baseUri, forceTransport) {
 		logger.debug('_transport is', _transport);
 		switch(_transport) {
 			case 'ws':
-				var uri = new std.uri.Uri(baseUri);
+				var uri = new Uri(baseUri);
 				uri.setProtocol('ws');
 				var url = uri.render() + 'ws';
 				logger.debug('connecting with ws')
@@ -316,7 +318,11 @@ function releaseMultiplexer() {
 	}
 }
 
-var FRAME = Enum('OPEN', 'CLOSE', 'DATA');
+var FRAME = Enum({
+	'OPEN': 0, 
+	'CLOSE': 1, 
+	'DATA': 2
+});
 DELIMITER = ',';
 
 var Connection = Class(function() {
@@ -371,6 +377,9 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 		}
 	}
 	this._sendOpen = function(id) {
+		logger.debug('_sendOpen', id, FRAME.OPEN);
+		KKK = FRAME;
+		JJJ = FRAME.OPEN;
 		this.sendFrame(id, FRAME.OPEN);
 	}
 	this._sendClose = function(id) {
@@ -384,6 +393,7 @@ var OrbitedMultiplexingProtocol = Class(BufferedProtocol, function(supr) {
 		}
 		var idPayload = id + DELIMITER + type + DELIMITER + payload;
 		var frame = idPayload.length + DELIMITER + idPayload;
+		logger.debug('frame:', frame, 'id:', id, 'type:', type, 'payload:', payload);
 		this.transport.write(frame);
 	}
 	
