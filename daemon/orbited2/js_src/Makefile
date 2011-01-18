@@ -1,4 +1,4 @@
-all: debug release
+all: debug
 
 debug:
 	jsio_compile Orbited2.pkg -j jsio-3.3alpha -o ../static/Orbited2.js -d
