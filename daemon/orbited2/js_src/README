@@ -1,0 +1,12 @@
+To debug:
+
+   `make debug`
+
+To release:
+(path to closure.jar must be specified in Makefile)
+
+   `make release`
+
+Default:
+
+   `make` with no arguments is the same as `make debug`
