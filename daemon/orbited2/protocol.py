@@ -149,6 +149,7 @@ def ensure_allowed_and_get_protocol_class(rules, conn):
     for rule in rules:
         if rule.hostname == conn.hostname and rule.port == conn.port:
             if (rule.host_header == '*' or rule.host_header == conn.host_header):
+                conn.myRule = rule
                 if rule.protocol == 'ws/hixie75':
                     return WebSocket75Protocol
                 if rule.protocol == 'ws/hixie76':
@@ -176,7 +177,10 @@ class RemoteConnection(object):
         self.port = handshake['port']
         self.path = handshake.get('path', '/')
         self.host_header = environ.get('HTTP_HOST', '')
-        self.origin = environ.get('HTTP_ORIGIN', '')
+	if environ.get('HTTP_X_FORWARDED_FOR', ''):
+            self.origin = environ.get('HTTP_X_FORWARDED_FOR', '')
+        else:
+            self.origin = environ.get('HTTP_ORIGIN', '')
 
         self._msgs = collections.deque()
         self._sendlock = eventlet.semaphore.Semaphore()
@@ -190,7 +194,11 @@ class RemoteConnection(object):
         self.sock = eventlet.connect((self.hostname, self.port))
         self.closed = False
         self.proto.handshake(self.sock)
-        
+        v4origin = self.origin.split(":")[-1]
+        if self.myRule.webirc:
+            self.send("WEBIRC %s cgiirc %s %s\n" %  (self.myRule.webirc, v4origin, v4origin))
+	if self.myRule.ipv6entry:
+            self.send(self.myRule.ipv6entry % self.origin)
         eventlet.spawn(self._run)
 
 
@@ -199,6 +207,12 @@ class RemoteConnection(object):
             msg = self.wait()
             if msg is None:
                 break
+	    
+            # CP1252 incompatibility handling: Convert input to unicode.
+            try:
+                msg = unicode(msg, encoding='utf-8', errors='strict')
+            except UnicodeDecodeError:
+                msg = unicode(msg, encoding='cp1252', errors='replace')
 #            print 'RECV<-Server', repr(msg)
             self._browser_conn.send_frame(msg)
         self._browser_conn.close()

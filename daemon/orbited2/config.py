@@ -74,6 +74,8 @@ class RemoteDestination(ConfigBase):
         hostname=None,
         port=None,
         host_header=None,
+        webirc=None,
+        ipv6entry=None,
         protocol='ws/hixie76'
     ):
         ConfigBase.__init__(self)
@@ -104,3 +106,5 @@ class RemoteDestination(ConfigBase):
         self.port = port
         self.host_header = host_header
         self.protocol = protocol
+        self.webirc = webirc
+        self.ipv6entry = ipv6entry
