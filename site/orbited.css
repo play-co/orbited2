@@ -1,0 +1,185 @@
+body {
+  background: #fff; color: #000;
+  margin: 0 10px 10px 10px;
+  padding: 0;
+}
+body, th, td {
+ font: normal 13px Verdana, 'Helvetica Neue', Helvetica, 'DejaVu Sans',
+                   'Bitstream Vera Sans', Arial, sans-serif;
+}
+h1, h2, h3, h4 {
+ font-family: Verdana, 'Helvetica Neue', Helvetica, 'DejaVu Sans',
+              'Bitstream Vera Sans', Arial, sans-serif;
+ font-weight: bold;
+ letter-spacing: -0.018em;
+ page-break-after: avoid;
+ color:  rgb(33,50,66);
+}
+
+
+#altlinks { display: none; }
+.nav { display: none; }
+#orbitednav {
+  text-align: left;
+  background-color: rgb(33,50,66);
+  margin: 0px -10px 0px -10px;
+  padding: 8px;
+  padding-left: 32px;
+}
+#orbitednav li {
+  display: inline;
+  padding: 4px;
+ /* border-left: 1px solid #3c5c7a; */
+}
+#orbitednav li a:visited, #orbitednav li a:link {
+ color: white;
+ border-bottom: 2px solid rgb(33,50,66);
+ font-weight: bold;
+}
+#orbitednav li a:hover {
+  background-color: rgb(33,50,66);
+  border-bottom: 2px solid white;
+}
+
+
+/* Link styles */
+:link, :visited {
+ text-decoration: none;
+ color: #3c5c7a;
+ border-bottom: 1px dotted #bbb;
+}
+
+
+
+/* Header */
+#header {
+  background-color: #3c5c7a;
+  margin: 0 -10px 0px -10px;
+  padding: 10px 0 5px 0;
+}
+#header img { border: none; margin: 0; }
+#header :link, #header :visited, #header :link:hover, #header :visited:hover {
+ background: transparent;
+ color: #555;
+ border: none;
+}
+#header h1 :link:hover, #header h1 :visited:hover { color: #000 }
+
+
+
+/* This is the style for the homepage
+ *
+ *
+ */
+
+  /* Eric Meyer's Reset CSS
+   * 
+   * From http://meyerweb.com/eric/thoughts/2008/01/15/resetting-again/
+   */
+  #homepage html, #homepage body, #homepage div, #homepage span,
+  #homepage applet, #homepage object, #homepage iframe, #homepage h1,
+  #homepage h2, #homepage h3, #homepage h4, #homepage h5, #homepage h6,
+  #homepage p, #homepage blockquote, #homepage pre, #homepage a,
+  #homepage abbr, #homepage acronym, #homepage address, #homepage big,
+  #homepage cite, #homepage code, #homepage del, #homepage dfn, #homepage em,
+  #homepage font, #homepage img, #homepage ins, #homepage kbd, #homepage q,
+  #homepage s, #homepage samp, #homepage small, #homepage strike,
+  #homepage strong, #homepage sub, #homepage sup, #homepage tt, #homepage var,
+  #homepage b, #homepage u, #homepage i, #homepage center, #homepage dl,
+  #homepage dt, #homepage dd, #homepage ol, #homepage ul, #homepage li,
+  #homepage fieldset, #homepage form, #homepage label, #homepage legend,
+  #homepage table, #homepage caption, #homepage tbody, #homepage tfoot,
+  #homepage thead, #homepage tr, #homepage th, #homepage td {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+        background: transparent;
+  }
+  #homepage body {
+        line-height: 1;
+  }
+  #homepage ol, #homepage ul {
+        list-style: none;
+  }
+  #homepage blockquote, #homepage q {
+        quotes: none;
+  }
+
+  /* remember to define focus styles! */
+  #homepage :focus {
+        outline: 0;
+  }
+
+  /* remember to highlight inserts somehow! */
+  #homepage ins {
+        text-decoration: none;
+  }
+  #homepage del {
+        text-decoration: line-through;
+  }
+
+  /* tables still need 'cellspacing="0"' in the markup */
+  #homepage table {
+        border-collapse: collapse;
+        border-spacing: 0;
+  }
+  #homepage {
+    font-family: Verdana, 'Helvetica Neue', Helvetica, 'DejaVu Sans',
+                 'Bitstream Vera Sans', Arial, sans-serif;
+    font-size: 15px;
+    line-height:19px;
+    width:890px;
+    margin: 0 35px 0 6px;
+  }
+  #homepage h2, #homepage h3 {
+    text-align: center;
+    font-weight:normal;
+  }
+  #homepage h2 {
+    font-size:19px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    margin: 24px 0 20px 0;  
+    color:#213242;
+  }
+  #homepage h3 {
+    text-transform:uppercase;
+    letter-spacing:1.4px;
+    font-weight:bold;
+    font-size:11px;
+    margin-top:26px;
+    margin-bottom:6px;
+    color:#3c5c7a;
+  }
+  #homepage #copy {
+    width:435px;
+  }
+  #homepage #visuals {
+    width:420px;
+    float:right;
+  }
+  #homepage #features td {
+    width:200px;
+  }
+  #homepage #features td.left {
+    padding-right:35px;
+  }
+  #homepage .get_started {
+    display:block;
+    margin:auto;
+    margin-top:20px;
+    background-color:#7a99bb;
+    color:black;
+    border:1px solid #213242;
+    -webkit-border-radius:8px;-moz-border-radius:8px;border-radius:8px;
+    text-decoration:none;
+    text-align:center;
+    font-size: 18px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    width:200px;
+    padding: 10px 0 12px 0;
+  }

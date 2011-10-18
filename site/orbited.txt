@@ -1,0 +1,226 @@
+<html>
+ <head>
+ </head>
+ <body>
+<div id="banner">
+
+<div id="header">
+
+<a id="logo" href="http://web.archive.org/web/20100527223707/http://orbited.org/">
+
+<img src="http://web.archive.org/web/20100527223707im_/http://orbited.org/chrome/theme/orbited-futura-brush.png" alt="Orbited: Networking for the Web" />
+
+</a>
+
+</div>
+
+<div id="metanav" class="nav">
+
+<ul>
+
+<li class="first"><a href="http://web.archive.org/web/20100527223707/http://orbited.org/login">Login</a></li><li class="last"><a href="http://web.archive.org/web/20100527223707/http://orbited.org/prefs">Preferences</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div id="mainnav" class="nav">
+
+<ul>
+
+<li class="first active"><a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki">Home</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/timeline">Timeline</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/roadmap">Roadmap</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/browser">Browse Source</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/report">View Tickets</a></li><li class="last"><a href="http://web.archive.org/web/20100527223707/http://orbited.org/search">Search</a></li>
+
+</ul>
+
+</div>
+
+<div id="ctxtnav" class="nav">
+
+<ul>
+
+<li class="first "><a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/WikiStart">Start Page</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/TitleIndex">Index</a></li><li><a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/WikiStart?action=history">History</a></li><li class="last"><a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/WikiStart?action=diff&version=46">Last Change</a></li>
+
+</ul>
+
+</div>
+
+<div id="content" class="wiki">
+
+<div class="wikipage searchable">
+
+
+
+
+
+<div id="homepage">
+
+<h2>Orbited: Real-time communication for the browser</h2>
+
+<div id="visuals">
+
+
+
+<img src="http://web.archive.org/web/20100527223707im_/http://orbited.org/raw-attachment/wiki/Resources/architecture.png" width="420" height="160" alt="Orbited Architecture">
+
+<a href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/LiveHelp" style="display:block; margin-top:40px;"><img src="http://web.archive.org/web/20100527223707im_/http://orbited.org/raw-attachment/wiki/Resources/demo-screen-blurb.png" width="420" height="220" alt="Livehelp Demo"></a>
+
+
+
+</div>
+
+<div id="copy">
+
+<p>Orbited provides a pure JavaScript/HTML socket in the browser. It is a web router and firewall that allows you to integrate web applications with arbitrary back-end systems. You can implement any network protocol in the browser—without resorting to plugins.</p>
+
+<table id="features" cellpadding="0" cellspacing="0">
+
+<tr>
+
+<td class="left">
+
+<h3>Integration</h3>
+
+<p>Orbited ships with support for many protocols out of the box, including IRC, XMPP, and STOMP (ActiveMQ, RabbitMQ)</p>
+
+</td>
+
+<td>
+
+<h3>Scalability</h3>
+
+<p>Orbited’s shared-nothing architecture supports arbitrarily large server clusters—perfect horizontal scalability.</p>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td class="left">
+
+<h3>Usability</h3>
+
+<p>Orbited works in all browsers, cross-port and cross-subdomain, with no loading bars, clicks, or spurious history entries.</p>
+
+</td>
+
+<td>
+
+<h3>Standards</h3>
+
+<p>Orbited uses only web standards to provide the most future-proof API and implementation.</p>
+
+</td>
+
+</tr>
+
+</table>
+
+<div id="buttons">
+
+<a id="get_started" href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/GetStarted">Get Started</a>
+
+</div>
+
+</div>
+
+</div>
+
+<div style="height:50px"></div>
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="altlinks">
+
+<h3>Download in other formats:</h3>
+
+<ul>
+
+<li class="last first">
+
+<a rel="nofollow" href="http://web.archive.org/web/20100527223707/http://orbited.org/wiki/WikiStart?format=txt">Plain Text</a>
+
+</li>
+
+</ul>
+
+</div>
+
+<div id="footer">
+
+Orbited © 2008 The Orbited Project
+
+</div>
+
+<script>
+
+/* We only want the extra trac menu stuff for the development section */
+
+// genshi doesn't seem to want to let us put two ampersand symbols in a row
+
+// so we'll just duplicate the if clause
+
+if (document.location.pathname == '/wiki/Development') {
+
+document.getElementById("metanav").style.display = "block"
+
+document.getElementById("mainnav").style.display = "block"
+
+document.getElementById("ctxtnav").style.display = "block"
+
+}
+
+if (document.location.pathname != '/') {
+
+if (document.location.pathname.slice(0,6) != '/wiki/') {
+
+document.getElementById("metanav").style.display = "block"
+
+document.getElementById("mainnav").style.display = "block"
+
+document.getElementById("ctxtnav").style.display = "block"
+
+}
+
+}
+
+if (document.location.pathname.slice(0,6) != '/wiki/') {
+
+if (document.location.pathname != '/') {
+
+document.getElementById("metanav").style.display = "block"
+
+document.getElementById("mainnav").style.display = "block"
+
+document.getElementById("ctxtnav").style.display = "block"
+
+}
+
+}
+
+/* we want to be able to download the source in other formats in some cases */
+
+var cpath = document.location.pathname
+
+if( cpath.indexOf("/browser") == 0 || cpath.indexOf("/attachment") == 0) {
+
+document.getElementById("altlinks").style.display = "block"
+
+}
+
+</script>
+
+</body>
+
+</html>
+
