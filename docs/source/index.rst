@@ -17,3 +17,4 @@ Contents:
    tcpsocket
    under_the_hood
    deployment
+   compilation
