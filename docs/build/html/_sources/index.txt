@@ -13,8 +13,5 @@ Contents:
 
    intro
    configuration
-   websocket
-   tcpsocket
-   under_the_hood
    deployment
    compilation
