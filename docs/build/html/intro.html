@@ -1,48 +1,207 @@
-
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html>
-<head>
-    <title>Mako Runtime Error</title>
-    <style>
-        body { font-family:verdana; margin:10px 30px 10px 30px;}
-        .stacktrace { margin:5px 5px 5px 5px; }
-        .highlight { padding:0px 10px 0px 10px; background-color:#9F9FDF; }
-        .nonhighlight { padding:0px; background-color:#DFDFDF; }
-        .sample { padding:10px; margin:10px 10px 10px 10px; font-family:monospace; }
-        .sampleline { padding:0px 10px 0px 10px; }
-        .sourceline { margin:5px 5px 10px 5px; font-family:monospace;}
-        .location { font-size:80%; }
-    </style>
-</head>
-<body>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+    Introduction
+ &mdash; orbited2 v0.2.0 documentation</title>
+        
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/docs.css" type="text/css" />
 
-<h2>Error !</h2>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '#',
+          VERSION:     '0.2.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="orbited2 v0.2.0 documentation" href="index.html" />
+        <link rel="next" title="Configuration" href="configuration.html" />
+        <link rel="prev" title="Orbited2 Documentation" href="index.html" />
+    
 
-<h3>TypeError: 'Undefined' object is not callable</h3>
+    </head>
+    <body>
+        
 
-    <div class="sample">
-    <div class="nonhighlight">
-<div class="sampleline">20     % if hasdoc(&#39;about&#39;):</div>
-<div class="sampleline">21         &lt;link rel=&#34;author&#34; title=&#34;${_(&#39;About these documents&#39;)}&#34; href=&#34;${pathto(&#39;about&#39;)}&#34; /&gt;</div>
-<div class="sampleline">22     % endif</div>
-<div class="highlight">23     &lt;link rel=&#34;index&#34; title=&#34;${_(&#39;Index&#39;)}&#34; href=&#34;${pathto(&#39;genindex&#39;)}&#34; /&gt;</div>
-<div class="sampleline">24     &lt;link rel=&#34;search&#34; title=&#34;${_(&#39;Search&#39;)}&#34; href=&#34;${pathto(&#39;search&#39;)}&#34; /&gt;</div>
-<div class="sampleline">25     % if hasdoc(&#39;copyright&#39;):</div>
-<div class="sampleline">26         &lt;link rel=&#34;copyright&#34; title=&#34;${_(&#39;Copyright&#39;)}&#34; href=&#34;${pathto(&#39;copyright&#39;)}&#34; /&gt;</div>
-<div class="sampleline">27     % endif</div>
-<div class="sampleline">28     &lt;link rel=&#34;top&#34; title=&#34;${docstitle|h}&#34; href=&#34;${pathto(&#39;index&#39;)}&#34; /&gt;</div>
-    </div>
-    </div>
 
-<div class="stacktrace">
-    <div class="location">/Users/gameclosure/gc/orbited2/docs/source/_templates/layout.mako, line 23:</div>
-    <div class="sourceline">    &lt;link rel=&#34;index&#34; title=&#34;${_(&#39;Index&#39;)}&#34; href=&#34;${pathto(&#39;genindex&#39;)}&#34; /&gt;</div>
-    <div class="location">/Users/gameclosure/gc/orbited2/docs/source/_templates/static_base.mako, line 9:</div>
-    <div class="sourceline">        ${self.headers()}</div>
-    <div class="location">/Library/Python/2.7/site-packages/Mako-0.5.0-py2.7.egg/mako/runtime.py, line 711:</div>
-    <div class="sourceline">callable_(context, *args, **kwargs)</div>
+
+
+        <h1>orbited2 v0.2.0 documentation</h1>
+
+        <div id="search">
+        Search:
+        <form class="search" action="search.html" method="get">
+          <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        </div>
+
+        <div class="versionheader">
+            Version: <span class="versionnum">0.2.0</span> Last Updated: None
+        </div>
+        <div class="clearboth"></div>
+
+        <div class="topnav">
+            <div id="pagecontrol">
+                <a href="reference/index.html">API Reference</a>
+                |
+                <a href="genindex.html">Index</a>
+            
+                <div class="sourcelink">(<a href="_sources/intro.txt">view source)</div>
+            </div>
+            
+            <div class="navbanner">
+                <a class="totoc" href="index.html">Table of Contents</a>
+                » 
+    Introduction
+ 
+                
+                
+<div class="prevnext">
+        Previous:
+        <a href="index.html" title="previous chapter">Orbited2 Documentation</a>
+        Next:
+        <a href="configuration.html" title="next chapter">Configuration</a>
 </div>
 
-</body>
+                <h2>
+                    
+    Introduction
+ 
+                </h2>
+            </div>
+                <ul>
+<li><a class="reference external" href="#">Introduction</a><ul>
+<li><a class="reference external" href="#overview">Overview</a><ul>
+<li><a class="reference external" href="#the-problem">The Problem</a></li>
+<li><a class="reference external" href="#the-solution">The Solution</a></li>
+<li><a class="reference external" href="#orbited-veterans">Orbited Veterans</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#installation">Installation</a></li>
+<li><a class="reference external" href="#github">Github</a></li>
+</ul>
+</li>
+</ul>
+
+            <div class="clearboth"></div>
+        </div>
+        
+        <div class="document">
+            <div class="body">
+                
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Orbited2&#8217;s purpose is to ease the development of Websocket-based applications by normalizing the protocol and api across varying browser and server implementations.</p>
+<blockquote>
+<ol class="arabic simple">
+<li>Choose a WebSocket server framework/library (like node.js, or eventlet.)</li>
+<li>Write a WebSocket application.</li>
+<li>Deploy Orbited2. It will put a normalized Websocket API in <em>all</em> browsers.</li>
+</ol>
+</blockquote>
+<div class="section" id="the-problem">
+<h3>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h3>
+<p>WebSocket is a far better real-time web protocol than anything we&#8217;ve seen so far, but it only works in a couple of the latest browsers. Additionally, the protocol is so new that it changes very quickly; a WebSocket application you write today might well stop working tomorrow. Further compounding the problem are the multitude of entrenched intermediaries, namely forward proxies, reverse proxies,  firewalls, virus scanners, and more &#8211; these obstacles will intercept and deny WebSocket connections.</p>
+</div>
+<div class="section" id="the-solution">
+<h3>The Solution<a class="headerlink" href="#the-solution" title="Permalink to this headline">¶</a></h3>
+<p>This code works in <em>all</em> browsers, and it will always use the best communication mechanism possible.</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://example.com:8000/static/Orbited2.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">Orbited2</span><span class="p">.</span><span class="nx">WebSocket</span><span class="p">.</span><span class="nx">install</span><span class="p">({</span>
+    <span class="nx">protocolVersion</span><span class="o">:</span> <span class="s2">&quot;hixie76&quot;</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s1">&#39;ws://example.com/app&#39;</span><span class="p">)</span></pre></div>
+</div>
+</div>
+<div class="section" id="orbited-veterans">
+<h3>Orbited Veterans<a class="headerlink" href="#orbited-veterans" title="Permalink to this headline">¶</a></h3>
+<p>For all of you Orbited veterans who aren&#8217;t so sure about writing WebSocket servers, and you just want to keep using trusty old Orbited.TCPSocket (but with performance and usability improvments) &#8211; don&#8217;t worry!</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;Orbited2.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Orbited2</span><span class="p">.</span><span class="nx">TCPSocket</span><span class="p">({</span> <span class="nx">orbitedUri</span><span class="o">:</span> <span class="s2">&quot;http://127.0.0.1:8000&quot;</span> <span class="p">})</span>
+<span class="nx">sock</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;irc.freenode.org&quot;</span><span class="p">,</span> <span class="mi">6667</span><span class="p">);</span>
+<span class="nx">sock</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">sock</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;NICK mcarter\r\n&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">//etc</span></pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Orbited2 is written in python and depends on setuptools for installation. The easiest way to install Orbited2 is to type:</p>
+<div class="highlight-none"><div class="highlight"><pre># easy_install orbited2</pre></div>
+</div>
+<p>If you are missing python or setuptools, please refer to the following links:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://python.org/download">install python</a></li>
+<li><a class="reference external" href="http://peak.telecommunity.com/DevCenter/EasyInstall#installation-instructions">install setuptools</a></li>
+</ul>
+<p>To confirm your installation succeeded, type:</p>
+<div class="highlight-none"><div class="highlight"><pre># orbited2 --help</pre></div>
+</div>
+</div>
+<div class="section" id="github">
+<h2>Github<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p>The development version of Orbited2 is located on github:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://github.com/mcarter/orbited2">http://github.com/mcarter/orbited2</a></li>
+</ul>
+<p>You can get a copy of the latest source by cloning the repository:</p>
+<div class="highlight-none"><div class="highlight"><pre># git clone git://github.com/mcarter/orbited2.git</pre></div>
+</div>
+<p>To install Orbited2 from source, ensure you have python and setuptools, then run:</p>
+<div class="highlight-none"><div class="highlight"><pre># cd orbited2/daemon
+# python setup.py install</pre></div>
+</div>
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+        
+            <div class="bottomnav">
+                
+<div class="prevnext">
+        Previous:
+        <a href="index.html" title="previous chapter">Orbited2 Documentation</a>
+        Next:
+        <a href="configuration.html" title="next chapter">Configuration</a>
+</div>
+
+                <div class="doc_copyright">
+                    &copy; Copyright 2010, Michael Carter.
+                    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+                </div>
+            </div>
+        
+
+
+
+
+
+
+    </body>
 </html>
+
+
+
