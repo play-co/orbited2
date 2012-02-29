@@ -403,5 +403,10 @@ class WebSocket76Protocol(WebSocket75Protocol):
             print repr(security_key), '!=', repr("8jKS'y:G*Co,Wxa-")
             raise Exception("Invalid server handshake (wrong 16 byte security key)")
         self._buf = buf[16:]
+
+    def _check_verb(self, line):
+        if line != "HTTP/1.1 101 WebSocket Protocol Handshake":
+            raise Exception("Invalid server handshake (verb line)")
+
     def close(self, sock):
         sock.sendall(self.pack_message(""))
