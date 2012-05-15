@@ -15,16 +15,16 @@ FRAME_CLOSE = 1
 FRAME_DATA = 2
 CONNECT_TIMEOUT = 30
 
+
 class OrbitedProtocol(object):
-    
+
     def __init__(self, server, rules, sock, addr):
         self._rules = rules
         self._server = server
         self._sock = sock
         self._addr = addr
         self._browser_conns = {}
-        
-        
+
     def run(self):
         buffer = ""
         length = -1
@@ -46,8 +46,7 @@ class OrbitedProtocol(object):
                 buffer = buffer[length:]
                 length = -1
                 self._dispatch_payload(payload)
-            
-            
+
     def _dispatch_payload(self, payload):
         try:
             id, frame_type, data = payload.split(DELIMETER, 2)
@@ -69,8 +68,7 @@ class OrbitedProtocol(object):
                 # ERROR
                 return
             self._browser_conns[id].on_frame(frame_type, data)
-            
-            
+
     def send_frame(self, id, frame_type, data=""):
         if isinstance(data, unicode):
             data = data.encode('utf-8', 'replace')
@@ -78,9 +76,9 @@ class OrbitedProtocol(object):
         frame = str(len(payload)) + ',' + payload
 #        print "SEND->Browser", repr(frame)
         self._sock.sendall(frame)
-            
+
 class BrowserConn(object):
-    
+
     def __init__(self, protocol, environ, rules, id):
         self._protocol = protocol
         self._environ = environ
@@ -89,7 +87,7 @@ class BrowserConn(object):
         self._protocol.send_frame(id, FRAME_OPEN)
         self._state = 'initial'
         self._remote_conn = None
-        
+
     def on_frame(self, frame_type, data):
         if frame_type == FRAME_DATA:
             self._process_frame(data)
@@ -101,11 +99,10 @@ class BrowserConn(object):
             return
         self._state = 'closed'
         self._protocol.send_frame(self._id, FRAME_CLOSE, reason)
-        
-        
+
     def send_frame(self, data):
         self._protocol.send_frame(self._id, FRAME_DATA, data)
-        
+
     def _connect(self, handshake):
         err_reason = 'connection timed out'
         with eventlet.timeout.Timeout(CONNECT_TIMEOUT, False):
@@ -126,8 +123,7 @@ class BrowserConn(object):
             self.close(err_reason)
         self.send_frame('1')
         self._state = 'open'
-        
-        
+
     def _process_frame(self, data):
         if self._state == 'initial':
             try:
@@ -138,7 +134,7 @@ class BrowserConn(object):
             else:
                 eventlet.spawn(self._connect, handshake)
                 self._state = 'connecting'
-                
+
         elif self._state == 'open':
             self._remote_conn.send(data)
         else:
@@ -159,19 +155,19 @@ def ensure_allowed_and_get_protocol_class(rules, conn):
 #    print 'failed', conn.__dict__
     raise Exception("Unauthorized remote destination; update config to allow access.")
 
+
 class RemoteConnection(object):
-    
+
     def __init__(self, browser_conn, handshake, environ, rules):
         self._browser_conn = browser_conn
-        
+
         if 'hostname' not in handshake:
             raise Exception("Invalid 'hostname' argument")
         if 'port' not in handshake:
             raise Exception("Invalid 'port' argument")
         if not isinstance(handshake['port'], int):
             raise Exception("Invalid 'port' argument (must be an integer")
-        
-        
+
         self.hostname = handshake['hostname']
         self.port = handshake['port']
         self.path = handshake.get('path', '/')
@@ -184,13 +180,12 @@ class RemoteConnection(object):
 
         proto_cls = ensure_allowed_and_get_protocol_class(rules, self)
         self.proto = proto_cls(self)
-        
-        
+
     def connect(self):
         self.sock = eventlet.connect((self.hostname, self.port))
         self.closed = False
         self.proto.handshake(self.sock)
-        
+
         eventlet.spawn(self._run)
 
 
@@ -219,7 +214,7 @@ class RemoteConnection(object):
             msgs = self.proto.parse_messages()
             self._msgs.extend(msgs)
         return self._msgs.popleft()
-        
+
     def send(self, msg):
         msg = self.proto.pack_message(msg)
 #        print 'SEND->SERVER', repr(msg)
@@ -228,7 +223,7 @@ class RemoteConnection(object):
             self.sock.sendall(msg)
         finally:
             self._sendlock.release()
-        
+
     def close(self):
         if self.closed:
             return
@@ -244,34 +239,35 @@ class RemoteConnection(object):
             self.sock.shutdown(True)
         except:
             pass
-        self.sock.close()               
+        self.sock.close()
+
 
 class TcpProtocol(object):
-    
+
     def __init__(self, conn):
         self.conn = conn
         self._buf = ""
-        
+
     def handshake(self, sock):
         return
-    
+
     def pack_message(self, data):
         return data
-    
+
     def recv(self, data):
         self._buf += data
-        
+
     def parse_messages(self):
         msgs = [self._buf]
         self._buf = ""
         return msgs
-        
+
     def close(self, sock):
         pass
 
 
 class WebSocket75Protocol(TcpProtocol):
-            
+
     def handshake(self, sock):
         conn = self.conn
         ws_host_header = conn.hostname + (conn.port == 80 and '' or ':' + str(conn.port))
@@ -305,7 +301,7 @@ class WebSocket75Protocol(TcpProtocol):
             if len(buf) > 4096:
                 raise Exception("Invalid server handshake (Too large before \\r\\n\\r\\n)")
         return buf
-        
+
     def _check_verb(self, line):
         if line != "HTTP/1.1 101 Web Socket Protocol Handshake":
             raise Exception("Invalid server handshake (verb line)")
@@ -317,7 +313,6 @@ class WebSocket75Protocol(TcpProtocol):
     def _check_connection(self, line):
         if line != "Connection: Upgrade":
             raise Exception("Invalid server handshake (connection header)")
-        
 
     def pack_message(self, message):
         """Pack the message inside ``00`` and ``FF``
@@ -360,14 +355,14 @@ class WebSocket75Protocol(TcpProtocol):
                 raise ValueError("Don't understand how to parse this type of message: %r" % buf)
         self._buf = buf
         return msgs
-        
+
 class WebSocket76Protocol(WebSocket75Protocol):
-    
+
     # TODO: This handshake is a bit ridiculous. I've taken the exact example
     #       Sec-Websocket-Keys from the rev 76 spec, and hard coded them into
     #       my handshake. This will work, but it really isn't want WS clients
     #       should be doing...
-    
+
     def handshake(self, sock):
         conn = self.conn
         ws_host_header = conn.hostname + (conn.port == 80 and '' or ':' + str(conn.port))
@@ -390,7 +385,7 @@ class WebSocket76Protocol(WebSocket75Protocol):
         headers = dict([ line.split(': ') for line in lines[3:] ])
         if headers.get('Sec-WebSocket-Origin', '') != conn.origin:
             raise Exception("Invalid server handshake (wrong WebSocket-Origin)")
-        
+
         while len(buf) < 16:
             try:
                 data = sock.recv(4096)
@@ -403,5 +398,10 @@ class WebSocket76Protocol(WebSocket75Protocol):
             print repr(security_key), '!=', repr("8jKS'y:G*Co,Wxa-")
             raise Exception("Invalid server handshake (wrong 16 byte security key)")
         self._buf = buf[16:]
+
+    def _check_verb(self, line):
+        if line != "HTTP/1.1 101 WebSocket Protocol Handshake":
+            raise Exception("Invalid server handshake (verb line)")
+
     def close(self, sock):
         sock.sendall(self.pack_message(""))
