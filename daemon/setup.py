@@ -42,7 +42,7 @@ def main():
         packages= find_packages(),
         package_data = find_package_data(),
         zip_safe = False,
-        install_requires = ['csp_eventlet>=0.4.1'],
+        install_requires = ['csp_eventlet>=0.4.1', 'static', 'paste'],
         entry_points = '''
             [console_scripts]
             orbited2 = orbited2.start:main
