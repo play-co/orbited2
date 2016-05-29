@@ -7,6 +7,9 @@ jsio('import lib.Enum as Enum');
 
 exports.logging = logging;
 exports.logger = logger;
+exports.settings = {};
+
+exports.utf8 = utf8;
 
 //logger.setLevel(0)
 
@@ -36,6 +39,22 @@ function setup() {
 	}
 }
 
+function getOrbitedUri() {
+	if (exports.settings.hostname) {
+		var output = 'http://'
+		if (exports.settings.protocol) {
+			output = exports.settings.protocol + '://'
+		}
+		output += exports.settings.hostname
+		if (exports.settings.port && exports.settings.port.toString() != '80') {
+			output += ':' + exports.settings.port;
+		}
+		return output;
+	}
+	return defaultOrbitedUri;
+}
+
+
 setup();
 
 // TCPSocket code
@@ -51,7 +70,8 @@ var READY_STATE = Enum({
 exports.TCPSocket = Class(function() {
 	
 	this.init = function(opts) {
-		this._orbitedUri  = opts.orbitedUri || defaultOrbitedUri;
+		opts = opts || {};
+		this._orbitedUri  = opts.orbitedUri || getOrbitedUri();
 		if (!/\/$/.test(this._orbitedUri)) {
 			this._orbitedUri += '/';
 		}
@@ -282,6 +302,7 @@ function getMultiplexer(baseUri, forceTransport) {
 		}
 		// TODO: Choose transport
 		var _transport = forceTransport;
+		_transport = 'csp';
 		if (!_transport) {
 			if (!!originalWebSocket) { _transport = 'ws'; }
 			else { _transport = 'csp'; }

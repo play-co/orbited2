@@ -307,8 +307,11 @@ class WebSocket75Protocol(TcpProtocol):
         return buf
         
     def _check_verb(self, line):
-        if line != "HTTP/1.1 101 Web Socket Protocol Handshake":
-            raise Exception("Invalid server handshake (verb line)")
+    	#	 HTTP/1.1 101 Web Socket Protocol Handshake
+		#    HTTP/1.1 101 WebSocket Protocol Handshake
+    	if not line.startswith("HTTP/1.1 101 ") or "Web" not in line or "Socket" not in line or "Handshake" not in line:
+#        if line != "HTTP/1.1 101 Web Socket Protocol Handshake":
+            raise Exception("Invalid server handshake (verb line), %s" % (repr(line),))
 
     def _check_upgrade(self, line):
         if line != "Upgrade: WebSocket":
